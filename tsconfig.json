@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2015",
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noEmit": true,
+
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false
+  }
+}
