@@ -4,11 +4,12 @@
   "description": "Shake & Vape - DIY Vaping Recipes",
   "main": "index.html",
   "author": "Simon Fuhrmann",
-  "license": "BSD-3-Clause",
+  "license": "BSD-2-Clause",
   "repository": "github:simonfuhrmann/shake-and-vape",
   "scripts": {
     "start": "parcel index.html --no-cache",
-    "build": "parcel build index.html"
+    "build": "npm run clean && parcel build index.html",
+    "clean": "rm -rf .cache dist"
   },
   "dependencies": {
     "firebase": "^8.3.1",
