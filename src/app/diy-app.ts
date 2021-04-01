@@ -25,8 +25,14 @@ export class DiyApp extends LitElement {
       <diy-auth-state></diy-auth-state>
       <diy-toolbar></diy-toolbar>
 
+      <diy-router-view path="/">
+        <p>Welcome page</p>
+      </diy-router-view>
+
       <diy-router-view path="/user/auth">
-        <diy-auth></diy-auth>
+        <template>
+          <diy-auth></diy-auth>
+        </template>
       </diy-router-view>
     `;
   }

@@ -41,12 +41,16 @@ export class DiyRouterView extends LitElement {
     `;
   }
 
+  private normalizePath(path: string) {
+    return path.endsWith('/') ? path.slice(0, -1) : path;
+  }
+
   private isRouteActive() {
-    return this.path === this.currentPath;
+    return this.normalizePath(this.path) === this.currentPath;
   }
 
   private onHashChange() {
-    this.currentPath = window.location.hash.slice(1);
+    this.currentPath = this.normalizePath(window.location.hash.slice(1));
     if (!this.isRouteActive()) return;
 
     const child = this.firstElementChild as HTMLTemplateElement;
