@@ -3,6 +3,7 @@ import {customElement, internalProperty} from 'lit-element';
 import {nothing} from 'lit-html';
 import firebase from 'firebase/app';
 
+import {StateMixin, State} from '../mixins/state-mixin';
 import {sharedStyles} from './diy-styles';
 import {firebaseApi} from '../modules/firebase'
 import {OxyDialog} from '../oxygen/oxy-dialog';
@@ -13,56 +14,51 @@ import '../oxygen/oxy-input';
 import '../oxygen/oxy-dialog';
 
 @customElement('diy-auth')
-export class DiyAuth extends LitElement {
+export class DiyAuth extends StateMixin(LitElement) {
   static styles = [
     sharedStyles, css`
     :host {
+      max-width: var(--default-content-width);
+      margin: 0 auto;
       padding: 32px;
       display: flex;
       flex-direction: column;
     }
     h2 {
-      margin: 0 0 0.5em 0;
+      margin: 8px 0 16px 0;
     }
-    oxy-button:not([raised]) {
-      text-transform: uppercase;
+    p {
+      margin-top: 0;
     }
     oxy-dialog .dialog-content {
       margin: 0 16px;
     }
 
-    #redirect-dialog > div {
-      margin: 32px;
-      /* FIXME: Remove button slot margin */
-      margin-bottom: calc(32px - 24px);
-    }
-    #providers oxy-button {
-      background-color: white;
+    #auth-providers oxy-button {
       margin: 8px 0;
     }
-    #providers oxy-button :first-child {
-      margin-right: 8px;
+    #auth-methods {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin: -8px;
     }
-    #providers oxy-button:not(:last-child) {
-      margin-bottom: 8px;
+    #auth-methods > * {
+      flex-grow: 1;
+      flex-basis: 0;
+      margin: 8px;
+      min-width: 256px;
+    }
+    #waiting-auth-dialog > div,
+    #sending-email-dialog > div {
+      margin: 32px;
+      /* FIXME: Remove button slot margin in <oxy-dialog> */
+      margin-bottom: calc(32px - 24px);
     }
 
     .paper-card {
       display: flex;
       flex-direction: column;
-      background-color: var(--secondary-background-color);
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: var(--default-box-shadow);
-    }
-    .paper-card .buttons {
-      margin: 8px 0 0 0;
-      display: flex;
-      flex-direction: row;
-      justify-content: flex-end;
-    }
-    .paper-card .buttons :not(:last-child) {
-      margin-right: 8px;
     }
     .input-label {
       margin-top: 8px;
@@ -72,79 +68,95 @@ export class DiyAuth extends LitElement {
     `];
 
   private firebaseAuth = firebaseApi.getAuth();
-  private hasRedirectResult = false;
+  private wasInitializedOnce = false;
+  private waitingAuthDialogTimeout = -1;
 
-  @query('#signin-email') signInEmail: OxyInput|undefined;
-  @query('#signin-password') signInPassword: OxyInput|undefined;
-  @query('#signup-email') signUpEmail: OxyInput|undefined;
-  @query('#signup-password1') signUpPassword1: OxyInput|undefined;
-  @query('#signup-password2') signUpPassword2: OxyInput|undefined;
-  @query('#redirect-dialog') redirectDialog: OxyDialog|undefined;
-  @internalProperty() currentUser: firebase.User|null = null;
-  @internalProperty() errorDialogMessage = '';
+  @query('#email-input') emailInput: OxyInput|undefined;
+  @query('#email-confirm-input') emailConfirmInput: OxyInput|undefined;
+  @query('#waiting-auth-dialog') waitingAuthDialog: OxyDialog|undefined;
+  @query('#sending-email-dialog') sendingEmailDialog: OxyDialog|undefined;
+  @internalProperty() isSignInWithEmailLink = false;
+  @internalProperty() infoDialogHeading = '';
+  @internalProperty() infoDialogMessage = '';
 
-  updated() {
-    this.getRediectResultOnce();
+  connectedCallback() {
+    super.connectedCallback();
+
+    // Signs the user in after opening the website from an email link.
+    if (this.firebaseAuth.isSignInWithEmailLink(window.location.href)) {
+      this.isSignInWithEmailLink = true;
+      const email = window.localStorage.getItem('emailForSignIn');
+      window.localStorage.removeItem('emailForSignIn');
+      if (!email) return;
+      this.signInWithEmail(email);
+    }
   }
 
-  getRediectResultOnce() {
-    if (this.hasRedirectResult) return;
-    this.hasRedirectResult = true;
+  stateChanged(newState: State) {
+    if (newState.firebaseUser) {
+      this.redirectAfterSignIn();
+    }
+  }
 
-    this.redirectDialog?.open();
+  updated() {
+    this.initializeOnce();
+  }
+
+  initializeOnce() {
+    if (this.wasInitializedOnce) return;
+    this.wasInitializedOnce = true;
+
+    // Open a dialog that tells the user to wait during third-party sign-in. If
+    // no third-party sign-in happened, the promise resolves immediately.
+    this.openWaitingForAuthDialog();
     this.firebaseAuth.getRedirectResult()
         .then(data => {
-          this.redirectDialog?.close();
-          if (this.firebaseAuth.currentUser) {
-            // Redirect user to the home page.
-            window.location.hash = '';
-          } else {
-            console.log('redirect no user', data);
-          }
-
+          this.closeWaitingForAuthDialog();
+          // If the user did not attempt to sign-in: Ignore this case.
+          if (!data.user) return;
+          // The sign-in process was successful. Redirect user.
+          this.redirectAfterSignIn();
         })
         .catch(error => {
-          this.redirectDialog?.close();
-          this.openErrorDialog(error.toString());
+          this.closeWaitingForAuthDialog();
+          this.openInfoDialog('Something went wrong', error.message);
         });
   }
 
   render() {
     return html`
-      ${this.renderUserInfo()}
-      ${this.renderProviders()}
-      ${this.renderEmailSignin()}
-      ${this.renderEmailSignup()}
-      ${this.renderRedirectDialog()}
-      ${this.renderErrorDialog()}
+      ${this.renderAuthMethods()}
+      ${this.renderEmailConfirm()}
+      ${this.renderWaitingForAuthDialog()}
+      ${this.renderSendingEmailDialog()}
+      ${this.renderInfoDialog()}
     `;
   }
 
-  private renderUserInfo() {
-    if (!this.currentUser) return nothing;
+  private renderAuthMethods() {
+    if (this.isSignInWithEmailLink) return nothing;
     return html`
-      <div id="userinfo" class="paper-card">
-        <h2>You are signed in</h2>
-        <div>User: ${this.currentUser.displayName}</div>
-        <div>Email: ${this.currentUser.email}</div>
-        <div>ID: ${this.currentUser.uid}</div>
-        <div class="buttons">
-          <oxy-button @click=${this.onSignOut}>Sign out</oxy-button>
-        </div>
+      <div id="auth-methods">
+        ${this.renderProviders()}
+        ${this.renderEmailAuth()}
       </div>
     `;
   }
 
   private renderProviders() {
     return html`
-      <div id="providers" class="paper-card">
+      <div id="auth-providers" class="paper-card">
         <h2>Third-party sign-in</h2>
-        <oxy-button raised @click=${this.signInGoogle}>
+        <p>
+          Use one of the third-party sign-in methods below for frictionless
+          authentication. We won't send you spam ever.
+        </p>
+        <oxy-button raised @click=${this.signInWithGoogle}>
           <oxy-icon icon="logos:google"></oxy-icon>
           <div>Sign in with Google</div>
         </oxy-button>
 
-        <oxy-button raised @click=${this.signInGithub}>
+        <oxy-button raised @click=${this.signInWithGithub}>
           <oxy-icon icon="logos:github"></oxy-icon>
           <div>Sign in with Github</div>
         </oxy-button>
@@ -152,102 +164,159 @@ export class DiyAuth extends LitElement {
     `;
   }
 
-  private renderEmailSignin() {
+  private renderEmailAuth() {
     return html`
-      <div class="paper-card">
+      <div id="auth-email" class="paper-card">
         <h2>Email sign-in</h2>
+        <p>
+          We offer password-less email sign-in. Provide your email
+          address, and you will receive a link to sign-in with.
+        </p>
         <div class="input-label">Email</div>
-        <oxy-input id="signin-email"></oxy-input>
-        <div class="input-label">Password</div>
-        <oxy-input id="signin-password"></oxy-input>
+        <oxy-input id="email-input"></oxy-input>
         <div class="buttons">
-          <oxy-button @click=${this.onResetPass}>Rest password</oxy-button>
-          <oxy-button @click=${this.onSignIn}>Sign in</oxy-button>
+          <oxy-button @click=${this.onSendEmailLink}>Send link</oxy-button>
         </div>
       </div>
     `;
   }
 
-  private renderEmailSignup() {
+  private renderEmailConfirm() {
+    if (!this.isSignInWithEmailLink) return nothing;
+    const authHandler = () => {
+      const email = this.emailConfirmInput?.value;
+      if (!email) return;
+      this.signInWithEmail(email);
+    };
     return html`
-      <div class="paper-card">
-        <h2>Email sign-up</h2>
+      <div id="email-confirm" class="paper-card">
+        <h2>Enter email address</h2>
+        <p>
+          We couldn't find the breadcrumb we left behind to identify you.
+          If you reached here using an sign-in link from an email, just enter
+          your email address again, and you'll be all set.
+        </p>
         <div class="input-label">Email</div>
-        <oxy-input id="signup-email"></oxy-input>
-        <div class="input-label">Password</div>
-        <oxy-input id="signup-password1"></oxy-input>
-        <div class="input-label">Password (repeat)</div>
-        <oxy-input id="signup-password2"></oxy-input>
+        <oxy-input id="email-confirm-input"></oxy-input>
         <div class="buttons">
-          <oxy-button @click=${this.onSignUp}>Sign up</oxy-button>
+          <oxy-button @click=${authHandler}>Authenticate</oxy-button>
         </div>
       </div>
     `;
   }
 
-  private renderRedirectDialog() {
+  private renderWaitingForAuthDialog() {
     return html`
-      <oxy-dialog id="redirect-dialog" backdrop>
-        <div>Waiting for redirect result...</div>
+      <oxy-dialog id="waiting-auth-dialog" backdrop noescape>
+        <div>Waiting for authentication...</div>
       </oxy-dialog>
     `;
   }
 
-  private renderErrorDialog() {
-    const clearErrorHandler = () => { this.errorDialogMessage = ''; };
+  private renderSendingEmailDialog() {
+    return html`
+      <oxy-dialog id="sending-email-dialog" backdrop noescape>
+        <div>Sending sign-in email...</div>
+      </oxy-dialog>
+    `;
+  }
+  private renderInfoDialog() {
+    const closeDialogHandler = () => {
+      this.infoDialogHeading = '';
+      this.infoDialogMessage = '';
+    };
     return html`
       <oxy-dialog
-          heading="Something went wrong"
+          heading=${this.infoDialogHeading}
           backdrop
-          ?opened=${!!this.errorDialogMessage}
-          @closed=${clearErrorHandler}>
-        <div class="dialog-content">${this.errorDialogMessage}</div>
+          ?opened=${!!this.infoDialogMessage}
+          @closed=${closeDialogHandler}>
+        <div class="dialog-content">${this.infoDialogMessage}</div>
         <div slot="buttons">
-          <oxy-button @click=${clearErrorHandler}>Close</oxy-button>
+          <oxy-button @click=${closeDialogHandler}>Close</oxy-button>
           <!-- FIXME Focus issues, button doesn't support ENTER or SPACE -->
         </div>
       </oxy-dialog>
     `;
   }
 
-  private signInGoogle() {
+  private signInWithGoogle() {
     const provider = new firebase.auth.GoogleAuthProvider();
     provider.addScope('email');
     this.firebaseAuth.signInWithRedirect(provider);
   }
 
-  private signInGithub() {
+  private signInWithGithub() {
     const provider = new firebase.auth.GithubAuthProvider();
     provider.addScope('user:email');
     this.firebaseAuth.signInWithRedirect(provider);
   }
 
-  private onSignIn() {
-    const email = this.signInEmail?.value || '';
-    const pass = this.signInPassword?.value || '';
-    this.firebaseAuth.signInWithEmailAndPassword(email, pass)
-        .then((/*data*/) => {
-          // If sign-up was successful, return to home.
-          // TODO
+  private signInWithEmail(email: string) {
+    this.openWaitingForAuthDialog();
+    this.firebaseAuth.signInWithEmailLink(email, window.location.href)
+        .then(() => {
+          this.closeWaitingForAuthDialog();
+          this.redirectAfterSignIn();
         })
         .catch((error) => {
-          this.openErrorDialog(error.message);
+          this.closeWaitingForAuthDialog();
+          this.openInfoDialog('Something went wrong', error.message);
+          this.isSignInWithEmailLink = false;
         });
   }
 
-  private onResetPass() {
-    // TODO
+  private onSendEmailLink() {
+    const email = this.emailInput?.value || '';
+    if (!email) {
+      this.openInfoDialog(
+          'Something went wrong', 'The e-mail address is invalid.');
+      return;
+    }
+
+    const actionCodeSettings = {
+      url: window.location.origin + '/#/user/auth',
+      handleCodeInApp: true,
+    };
+    this.sendingEmailDialog?.open();
+    this.firebaseAuth.sendSignInLinkToEmail(email, actionCodeSettings)
+        .then(() => {
+          this.sendingEmailDialog?.close();
+          window.localStorage.setItem('emailForSignIn', email);
+          this.openInfoDialog(
+              'Email sent',
+              'Please check your inbox for an email to sign-in with.');
+        })
+        .catch((error) => {
+          this.sendingEmailDialog?.close();
+          this.openInfoDialog('Something went wrong', error.message);
+        });
   }
 
-  private onSignUp() {
-    // TODO
+  private openWaitingForAuthDialog() {
+    this.waitingAuthDialogTimeout = window.setTimeout(() => {
+      this.waitingAuthDialog?.open();
+    }, 100);
   }
 
-  private onSignOut() {
-    this.firebaseAuth.signOut();
+  private closeWaitingForAuthDialog() {
+    if (this.waitingAuthDialogTimeout >= 0) {
+      window.clearTimeout(this.waitingAuthDialogTimeout);
+      this.waitingAuthDialogTimeout = -1;
+    }
+    this.waitingAuthDialog?.close();
   }
 
-  private openErrorDialog(errorMessage: string) {
-    this.errorDialogMessage = errorMessage;
+  private openInfoDialog(heading: string, message: string) {
+    this.infoDialogHeading = heading;
+    this.infoDialogMessage = message;
+  }
+
+  private redirectAfterSignIn() {
+    // The mail link leaves some URL garbage behind. Clear that out.
+    const href = window.location.href.replace(/\?.*/, '')
+    window.history.replaceState({}, '', href);
+    // Clear the hash, to redirect to the main route.
+    window.location.hash = '/';
   }
 }
