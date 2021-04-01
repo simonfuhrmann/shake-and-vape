@@ -3,6 +3,7 @@ import {customElement, internalProperty} from 'lit-element';
 import {nothing} from 'lit-html';
 import firebase from 'firebase/app';
 
+import {sharedStyles} from './diy-styles';
 import {firebaseApi} from '../modules/firebase'
 import {StateMixin} from '../mixins/state-mixin';
 import {State} from '../modules/state-types';
@@ -14,7 +15,8 @@ import '../oxygen/oxy-icons-all';
 
 @customElement('diy-toolbar')
 export class DiyToolbar extends StateMixin(LitElement) {
-  static styles = css`
+  static styles = [
+    sharedStyles, css`
     :host {
       background-color: #424b4b;
       color: #fff;
@@ -40,7 +42,7 @@ export class DiyToolbar extends StateMixin(LitElement) {
     oxy-button#signin oxy-icon {
       margin-right: 4px;
     }
-  `;
+  `];
 
   @internalProperty() currentUser: firebase.User|null = null;
 

@@ -14,9 +14,13 @@ export const sharedStyles = css`
     --success-text-color: #0f0;
     --separator-color: #999;
 
+    --button-background-color: #1a73e8;
+    --button-foreground-color: white;
+
     --default-box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
-        0 2px 2px 0 rgba(0, 0, 0, 0.14),
-        0 1px 5px 0 rgba(0, 0, 0, 0.12);
+        0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+
+    --default-content-width: 690px;
 
     --oxy-input-border-color-focused: #aaa;
 
@@ -31,6 +35,30 @@ export const sharedStyles = css`
     --oxy-scrollbar-thumb-hover-color: transparent;
     --oxy-scrollbar-thumb-hover-box-shadow:
         inset 0 0 0 var(--oxy-scrollbar-width) var(--tertiary-text-color);
+  }
+
+  oxy-button[raised] {
+    background-color: var(--button-background-color);
+    color: var(--button-foreground-color);
+    box-shadow: var(--default-box-shadow);
+  }
+  oxy-button:not([raised]) {
+    text-transform: uppercase;
+  }
+  oxy-button > oxy-icon:not(:last-child) {
+    margin-right: 8px;
+  }
+
+  .paper-card {
+    background-color: var(--secondary-background-color);
+    box-shadow: var(--default-box-shadow);
+    padding: 16px;
+  }
+  .paper-card > .buttons {
+    margin: 8px 0 0 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
   }
 
   .scrollable::-webkit-scrollbar {
