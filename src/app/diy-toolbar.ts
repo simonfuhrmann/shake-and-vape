@@ -5,8 +5,7 @@ import firebase from 'firebase/app';
 
 import {sharedStyles} from './diy-styles';
 import {firebaseApi} from '../modules/firebase'
-import {StateMixin} from '../mixins/state-mixin';
-import {State} from '../modules/state-types';
+import {StateMixin, State} from '../mixins/state-mixin';
 
 import '../components/diy-router-link';
 import '../oxygen/oxy-button';

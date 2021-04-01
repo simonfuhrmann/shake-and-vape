@@ -32,3 +32,5 @@ export function StateMixin<TBase extends Constructor>(Base: TBase) {
     }
   };
 }
+
+export {State};
