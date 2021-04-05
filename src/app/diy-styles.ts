@@ -49,6 +49,10 @@ export const sharedStyles = css`
     margin-right: 8px;
   }
 
+  oxy-dialog > .content {
+    margin: 0 16px;
+  }
+
   .paper-card {
     background-color: var(--secondary-background-color);
     box-shadow: var(--default-box-shadow);

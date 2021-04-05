@@ -5,7 +5,7 @@ import firebase from 'firebase/app';
 
 import {StateMixin, State} from '../mixins/state-mixin';
 import {sharedStyles} from './diy-styles';
-import {firebaseApi} from '../modules/firebase'
+import {firebaseApi} from '../modules/firebase-api'
 import {OxyDialog} from '../oxygen/oxy-dialog';
 import {OxyInput} from '../oxygen/oxy-input';
 
@@ -29,9 +29,6 @@ export class DiyAuth extends StateMixin(LitElement) {
     }
     p {
       margin-top: 0;
-    }
-    oxy-dialog .dialog-content {
-      margin: 0 16px;
     }
 
     #auth-providers oxy-button {
@@ -231,7 +228,7 @@ export class DiyAuth extends StateMixin(LitElement) {
           backdrop
           ?opened=${!!this.infoDialogMessage}
           @closed=${closeDialogHandler}>
-        <div class="dialog-content">${this.infoDialogMessage}</div>
+        <div class="content">${this.infoDialogMessage}</div>
         <div slot="buttons">
           <oxy-button @click=${closeDialogHandler}>Close</oxy-button>
           <!-- FIXME Focus issues, button doesn't support ENTER or SPACE -->

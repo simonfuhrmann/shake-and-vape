@@ -4,7 +4,7 @@ import {nothing} from 'lit-html';
 import firebase from 'firebase/app';
 
 import {sharedStyles} from './diy-styles';
-import {firebaseApi} from '../modules/firebase'
+import {firebaseApi} from '../modules/firebase-api'
 import {StateMixin, State} from '../mixins/state-mixin';
 
 import '../components/diy-router-link';

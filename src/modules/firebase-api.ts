@@ -4,7 +4,7 @@ import 'firebase/firestore';
 
 import {firebaseConfig} from '../config/firebase';
 
-class Firebase {
+class FirebaseApi {
   private app: firebase.app.App;
 
   constructor() {
@@ -20,4 +20,4 @@ class Firebase {
   }
 }
 
-export const firebaseApi = new Firebase();
+export const firebaseApi = new FirebaseApi();
