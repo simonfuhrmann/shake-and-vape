@@ -22,4 +22,4 @@ The website is deployed by building and minifying the HTML, JS and CSS, and
 uploading it to Firebase Hosting.
 
 * Build and minify: `npm run build`
-* Deploy to Firebase: `firebase depoly`
+* Deploy to Firebase: `firebase deploy`
