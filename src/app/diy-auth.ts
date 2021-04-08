@@ -24,9 +24,6 @@ export class DiyAuth extends StateMixin(LitElement) {
       display: flex;
       flex-direction: column;
     }
-    h2 {
-      margin: 8px 0 16px 0;
-    }
     p {
       margin-top: 0;
     }

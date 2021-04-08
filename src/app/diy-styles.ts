@@ -5,6 +5,7 @@ export const sharedStyles = css`
     --primary-background-color: #eceff1;
     --secondary-background-color: #f9fafb;
     --tertiary-background-color: #fff;
+    --toolbar-background-color: #424b4b;
 
     --primary-text-color: #000;
     --secondary-text-color: #333;
@@ -63,6 +64,9 @@ export const sharedStyles = css`
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
+  }
+  .paper-card > h2 {
+      margin: 8px 0 16px 0;
   }
 
   .scrollable::-webkit-scrollbar {

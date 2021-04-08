@@ -4,7 +4,7 @@ import {nothing} from 'lit-html';
 import firebase from 'firebase/app';
 
 import {sharedStyles} from './diy-styles';
-import {firebaseApi} from '../modules/firebase-api'
+import {UserDetails} from '../modules/state-types';
 import {StateMixin, State} from '../mixins/state-mixin';
 
 import '../components/diy-router-link';
@@ -17,7 +17,7 @@ export class DiyToolbar extends StateMixin(LitElement) {
   static styles = [
     sharedStyles, css`
     :host {
-      background-color: #424b4b;
+      background-color: var(--toolbar-background-color);
       color: #fff;
       padding: 0 16px;
       height: 64px;
@@ -32,27 +32,26 @@ export class DiyToolbar extends StateMixin(LitElement) {
       font-weight: normal;
       flex-grow: 1;
     }
-    oxy-button#menu {
+    #menu-button {
       border-radius: 20px;
     }
-    oxy-button#signin {
+    #signin-button, #user-button {
       padding: 8px 16px;
-    }
-    oxy-button#signin oxy-icon {
-      margin-right: 4px;
     }
   `];
 
   @internalProperty() currentUser: firebase.User|null = null;
+  @internalProperty() userDetails: UserDetails|null = null;
 
   stateChanged(newState: State, _oldState: State|null) {
     this.currentUser = newState.firebaseUser;
+    this.userDetails = newState.userDetails;
   }
 
   render() {
     return html`
       <diy-router-link path="">
-        <oxy-button id="menu">
+        <oxy-button id="menu-button">
           <oxy-icon icon="icons:menu"></oxy-icon>
         </oxy-button>
       </diy-router-link>
@@ -60,7 +59,7 @@ export class DiyToolbar extends StateMixin(LitElement) {
       <h1>Shake and Vape</h1>
 
       ${this.renderSigninButton()}
-      ${this.renderSignoutButton()}
+      ${this.renderUserMenu()}
     `;
   }
 
@@ -68,7 +67,7 @@ export class DiyToolbar extends StateMixin(LitElement) {
     if (this.currentUser !== null) return nothing;
     return html`
       <diy-router-link path="/user/auth">
-        <oxy-button id="signin">
+        <oxy-button id="signin-button">
           <oxy-icon icon="social:person"></oxy-icon>
           <div>Sign in</div>
         </oxy-button>
@@ -76,19 +75,15 @@ export class DiyToolbar extends StateMixin(LitElement) {
     `;
   }
 
-  private renderSignoutButton() {
+  private renderUserMenu() {
     if (this.currentUser === null) return nothing;
     return html`
-      <diy-router-link path="">
-        <oxy-button id="signin" @click=${this.signOut}>
+      <diy-router-link path="/user/profile">
+        <oxy-button id="user-button">
           <oxy-icon icon="social:person"></oxy-icon>
-          <div>Sign out</div>
+          <div>${this.userDetails?.name || 'Sign in'}</div>
         </oxy-button>
       </diy-router-link>
     `;
-  }
-
-  private signOut() {
-    firebaseApi.getAuth().signOut();
   }
 }
