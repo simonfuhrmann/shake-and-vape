@@ -11,6 +11,7 @@ type UnsubscribeFn = () => void;
 class FirestoreApi {
   private db: firebase.firestore.Firestore;
   private userDocUnsubscribe: UnsubscribeFn|undefined;
+  private usernameCache = new Map<string, Promise<string>>();
 
   constructor() {
     this.db = firebaseApi.getFirestore();
@@ -24,6 +25,7 @@ class FirestoreApi {
       this.userDocUnsubscribe = undefined;
     }
 
+    if (!uid) return;
     const ref = this.db.collection('users').doc(uid);
     this.userDocUnsubscribe = ref.onSnapshot(callback);
   }
@@ -37,13 +39,14 @@ class FirestoreApi {
     }
 
     // The first step is to add a username doc to the 'usernames' collection.
-    // If insertion fails, the username is already taken. The second step is to
-    // update the doc in the 'users' collection with the new name. The last step
-    // is to delete the old username in case of a name change (print but
-    // otherwise ignore failures).
+    // If insertion fails, the username is already taken. It may be taken by the
+    // current user, so proceed either way. The second step is to update the doc
+    // in the 'users' collection with the new name. The last step is to delete
+    // the old username in case of a name change (print but otherwise ignore
+    // failures).
     const newNameDoc = this.db.collection('usernames').doc(newName);
     return newNameDoc.set({ uid })
-      .then(() => {
+      .finally(() => {
         const userDoc = this.db.collection('users').doc(uid);
         return userDoc.set({ name: newName })
           .then(() => {
@@ -56,10 +59,23 @@ class FirestoreApi {
           .catch(() => {
             throw new Error('The name is already taken');
           });
-      })
-      .catch(() => {
-        throw new Error('The name is already taken');
       });
+  }
+
+  usernameForUid(uid: string): Promise<string> {
+    // Check if the username is already cached.
+    const entry = this.usernameCache.get(uid);
+    if (entry) return entry;
+
+    // Otherwise, request the username from Firestore.
+    const promise = this.db.collection('users').doc(uid).get()
+        .then((doc) => doc.data()?.name || '')
+        .catch((error) => {
+          console.log('Error fetching user name:', error.message);
+          return '';
+        });
+    this.usernameCache.set(uid, promise);
+    return promise;
   }
 }
 

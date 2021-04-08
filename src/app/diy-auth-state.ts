@@ -38,7 +38,6 @@ export class DiyAuthState extends StateMixin(LitElement) {
     // Publish the current user to the global state every time it changes.
     firebaseApi.getAuth().onAuthStateChanged((user: firebase.User|null) => {
       Actions.setCurrentUser(user);
-
       this.loadUserDetails(user);
     });
   }
@@ -60,10 +59,10 @@ export class DiyAuthState extends StateMixin(LitElement) {
       <oxy-dialog heading="Enter your display name" noescape backdrop opened>
         <div class="content">
           <p>
-            Shake and Vape takes your privacy serious. As such, your email address
-            and real name that may be associated with your sign-in credientials is
-            never displayed to other users. You choose the name other users will
-            see.
+            Shake and Vape takes your privacy serious. As such, your email
+            address and real name that may be associated with your sign-in
+            credientials is never displayed to other users. You choose the name
+            other users will see.
           </p>
           <oxy-input id="user-name-input" placeholder="Enter name"></oxy-input>
           <div id="user-name-error">${this.userNameError}</div>
@@ -78,6 +77,7 @@ export class DiyAuthState extends StateMixin(LitElement) {
   private loadUserDetails(user: firebase.User|null) {
     if (!user || !user.uid) {
       Actions.setUserDetails(null);
+      firestoreApi.onUserDocSnapshot('', () => {});
       return;
     }
 
@@ -117,7 +117,5 @@ export class DiyAuthState extends StateMixin(LitElement) {
         .catch((error) => {
           this.userNameError = error.message;
         });
-
-    console.log('user name', input.value);
   }
 }
