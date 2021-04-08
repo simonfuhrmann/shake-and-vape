@@ -7,6 +7,7 @@ import '../components/diy-router-view';
 import '../components/diy-router-link';
 import './diy-auth';
 import './diy-auth-state';
+import './diy-user-profile';
 import './diy-toolbar';
 
 @customElement('diy-app')
@@ -32,6 +33,12 @@ export class DiyApp extends LitElement {
       <diy-router-view path="/user/auth">
         <template>
           <diy-auth></diy-auth>
+        </template>
+      </diy-router-view>
+
+      <diy-router-view path="/user/profile">
+        <template>
+          <diy-user-profile></diy-user-profile>
         </template>
       </diy-router-view>
     `;
