@@ -1,16 +1,16 @@
-import {LitElement, html, css} from 'lit-element';
-import {customElement, internalProperty} from 'lit-element';
-import {nothing} from 'lit-html';
+import {LitElement, css, html, nothing} from 'lit';
+import {customElement, state} from 'lit/decorators';
 import firebase from 'firebase/app';
+
+import 'oxygen-mdc/oxy-button';
+import 'oxygen-mdc/oxy-icon';
+import 'oxygen-mdc/oxy-icons-all';
 
 import {sharedStyles} from './diy-styles';
 import {UserDetails} from '../modules/state-types';
 import {StateMixin, State} from '../mixins/state-mixin';
 
 import '../components/diy-router-link';
-import '../oxygen/oxy-button';
-import '../oxygen/oxy-icon';
-import '../oxygen/oxy-icons-all';
 
 @customElement('diy-toolbar')
 export class DiyToolbar extends StateMixin(LitElement) {
@@ -40,8 +40,8 @@ export class DiyToolbar extends StateMixin(LitElement) {
     }
   `];
 
-  @internalProperty() currentUser: firebase.User|null = null;
-  @internalProperty() userDetails: UserDetails|null = null;
+  @state() private currentUser: firebase.User|null = null;
+  @state() private userDetails: UserDetails|null = null;
 
   stateChanged(newState: State, _oldState: State|null) {
     this.currentUser = newState.firebaseUser;

@@ -1,6 +1,5 @@
-import {LitElement, html} from 'lit-element';
-import {customElement, property, internalProperty} from 'lit-element';
-import {nothing} from 'lit-html';
+import {LitElement, html, nothing} from 'lit';
+import {customElement, property, state} from 'lit/decorators';
 
 // A router view which displays the slotted contents only if the current hash
 // route matches the `path` property. To avoid always instantiating all routes
@@ -19,8 +18,8 @@ export class DiyRouterView extends LitElement {
   private hashChangeHandler = this.onHashChange.bind(this);
 
   @property({type: String}) path = '';
-  @internalProperty() currentPath = '';
-  @internalProperty() templateClone: Node|undefined;
+  @state() private currentPath = '';
+  @state() private templateClone: Node|undefined;
 
   connectedCallback() {
     super.connectedCallback();

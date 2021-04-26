@@ -1,5 +1,5 @@
-import {LitElement, html, css} from 'lit-element';
-import {customElement} from 'lit-element';
+import {LitElement, css, html} from 'lit';
+import {customElement} from 'lit/decorators';
 
 import {sharedStyles} from './diy-styles';
 
@@ -9,6 +9,7 @@ import './diy-auth';
 import './diy-auth-state';
 import './diy-user-profile';
 import './diy-toolbar';
+import './diy-welcome-page';
 
 @customElement('diy-app')
 export class DiyApp extends LitElement {
@@ -27,7 +28,9 @@ export class DiyApp extends LitElement {
       <diy-toolbar></diy-toolbar>
 
       <diy-router-view path="/">
-        <p>Welcome page</p>
+        <template>
+          <diy-welcome-page></diy-welcome-page>
+        </template>
       </diy-router-view>
 
       <diy-router-view path="/user/auth">

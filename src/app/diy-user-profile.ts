@@ -1,19 +1,18 @@
-import {LitElement, html, css} from 'lit-element';
-import {customElement, query, internalProperty} from 'lit-element';
-import {nothing} from 'lit-html';
+import {LitElement, css, html, nothing} from 'lit';
+import {customElement, query, state} from 'lit/decorators';
 import firebase from 'firebase/app';
+
+import {OxyInput} from 'oxygen-mdc/oxy-input';
+import 'oxygen-mdc/oxy-button';
+import 'oxygen-mdc/oxy-input';
+import 'oxygen-mdc/oxy-icon';
+import 'oxygen-mdc/oxy-icons-all';
 
 import {sharedStyles} from './diy-styles';
 import {firebaseApi} from '../modules/firebase-api'
 import {firestoreApi} from '../modules/firestore-api'
 import {UserDetails} from '../modules/state-types';
 import {StateMixin, State} from '../mixins/state-mixin';
-import {OxyInput} from '../oxygen/oxy-input';
-
-import '../oxygen/oxy-button';
-import '../oxygen/oxy-input';
-import '../oxygen/oxy-icon';
-import '../oxygen/oxy-icons-all';
 
 @customElement('diy-user-profile')
 export class DiyUserProfile extends StateMixin(LitElement) {
@@ -40,9 +39,9 @@ export class DiyUserProfile extends StateMixin(LitElement) {
   `];
 
   @query('#name-input') nameInput: OxyInput|undefined;
-  @internalProperty() currentUser: firebase.User|null = null;
-  @internalProperty() userDetails: UserDetails|null = null;
-  @internalProperty() changeNameError = '';
+  @state() private currentUser: firebase.User|null = null;
+  @state() private userDetails: UserDetails|null = null;
+  @state() private changeNameError = '';
 
   stateChanged(newState: State, _oldState: State|null) {
     this.currentUser = newState.firebaseUser;

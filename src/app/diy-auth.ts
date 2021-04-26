@@ -1,17 +1,16 @@
-import {LitElement, query, html, css} from 'lit-element';
-import {customElement, internalProperty} from 'lit-element';
-import {nothing} from 'lit-html';
+import {LitElement, css, html, nothing} from 'lit';
+import {customElement, query, state} from 'lit/decorators';
 import firebase from 'firebase/app';
+
+import {OxyDialog} from 'oxygen-mdc/oxy-dialog';
+import {OxyInput} from 'oxygen-mdc/oxy-input';
+import 'oxygen-mdc/oxy-button';
+import 'oxygen-mdc/oxy-input';
+import 'oxygen-mdc/oxy-dialog';
 
 import {StateMixin, State} from '../mixins/state-mixin';
 import {sharedStyles} from './diy-styles';
 import {firebaseApi} from '../modules/firebase-api'
-import {OxyDialog} from '../oxygen/oxy-dialog';
-import {OxyInput} from '../oxygen/oxy-input';
-
-import '../oxygen/oxy-button';
-import '../oxygen/oxy-input';
-import '../oxygen/oxy-dialog';
 
 @customElement('diy-auth')
 export class DiyAuth extends StateMixin(LitElement) {
@@ -69,9 +68,9 @@ export class DiyAuth extends StateMixin(LitElement) {
   @query('#email-confirm-input') emailConfirmInput: OxyInput|undefined;
   @query('#waiting-auth-dialog') waitingAuthDialog: OxyDialog|undefined;
   @query('#sending-email-dialog') sendingEmailDialog: OxyDialog|undefined;
-  @internalProperty() isSignInWithEmailLink = false;
-  @internalProperty() infoDialogHeading = '';
-  @internalProperty() infoDialogMessage = '';
+  @state() private isSignInWithEmailLink = false;
+  @state() private infoDialogHeading = '';
+  @state() private infoDialogMessage = '';
 
   connectedCallback() {
     super.connectedCallback();

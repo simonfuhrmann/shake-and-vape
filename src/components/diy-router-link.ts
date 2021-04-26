@@ -1,5 +1,5 @@
-import {LitElement, css, html} from 'lit-element';
-import {customElement, property} from 'lit-element';
+import {LitElement, css, html} from 'lit';
+import {customElement, property} from 'lit/decorators';
 
 // A link element that sets the hash route according to the `path` property.
 @customElement('diy-router-link')
