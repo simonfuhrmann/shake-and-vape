@@ -55,7 +55,7 @@ export class DiyAuth extends StateMixin(LitElement) {
     }
     .input-label {
       margin-top: 8px;
-      color: var(--secondary-text-color);
+      color: var(--fg-color-2);
       font-size: 0.8em;
     }
     `];

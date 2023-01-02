@@ -18,7 +18,7 @@ export class DiyApp extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
-      background-color: var(--primary-background-color);
+      background-color: var(--bg-color-1);
       min-height: 100vh;
     }`];
 

@@ -17,8 +17,8 @@ export class DiyToolbar extends StateMixin(LitElement) {
   static styles = [
     sharedStyles, css`
     :host {
-      background-color: var(--toolbar-background-color);
-      color: #fff;
+      background-color: var(--bg-color-toolbar);
+      color: var(--fg-color-toolbar);
       padding: 0 16px;
       height: 64px;
       display: flex;

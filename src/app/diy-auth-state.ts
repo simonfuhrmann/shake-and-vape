@@ -20,7 +20,7 @@ export class DiyAuthState extends StateMixin(LitElement) {
     sharedStyles, css`
       #user-name-error {
         padding-top: 8px;
-        color: var(--error-text-color);
+        color: var(--fg-color-error);
         font-size: 0.9em;
       }
     `];

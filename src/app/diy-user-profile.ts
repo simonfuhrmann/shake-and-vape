@@ -34,7 +34,7 @@ export class DiyUserProfile extends StateMixin(LitElement) {
     }
 
     .error {
-      color: var(--error-text-color);
+      color: var(--fg-color-error);
     }
   `];
 
@@ -126,7 +126,7 @@ export class DiyUserProfile extends StateMixin(LitElement) {
       return;
     }
     if (newName == currentName) {
-      this.changeNameError = 'Current and new name cannot be the same';
+      this.changeNameError = 'New and current name cannot be the same';
       return;
     }
     const uid = this.currentUser?.uid;

@@ -2,21 +2,22 @@ import {css} from 'lit';
 
 export const sharedStyles = css`
   :host {
-    --primary-background-color: #eceff1;
-    --secondary-background-color: #f9fafb;
-    --tertiary-background-color: #fff;
-    --toolbar-background-color: #424b4b;
+    --bg-color-1: #eceff1;
+    --bg-color-2: #f9fafb;
+    --bg-color-2: #fff;
 
-    --primary-text-color: #000;
-    --secondary-text-color: #333;
-    --disabled-text-color: #666;
+    --fg-color-1: #000;
+    --fg-color-2: #333;
+    --fg-color-disabled: #666;
+    --fg-color-error: #f00;
+    --fg-color-success: #0f0;
 
-    --error-text-color: #f00;
-    --success-text-color: #0f0;
     --separator-color: #999;
 
-    --button-background-color: #1a73e8;
-    --button-foreground-color: white;
+    --bg-color-button: #1a73e8;
+    --fg-color-button: white;
+    --bg-color-toolbar: #424b4b;
+    --fg-color-toolbar: white;
 
     --default-box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
         0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
@@ -32,15 +33,15 @@ export const sharedStyles = css`
     --oxy-scrollbar-thumb-border: 1px solid transparent;
     --oxy-scrollbar-thumb-border-radius: 3px;
     --oxy-scrollbar-thumb-box-shadow:
-        inset 0 0 0 var(--oxy-scrollbar-width) var(--disabled-text-color);
+        inset 0 0 0 var(--oxy-scrollbar-width) var(--fg-color-disabled);
     --oxy-scrollbar-thumb-hover-color: transparent;
     --oxy-scrollbar-thumb-hover-box-shadow:
-        inset 0 0 0 var(--oxy-scrollbar-width) var(--tertiary-text-color);
+        inset 0 0 0 var(--oxy-scrollbar-width) var(--fg-color-3);
   }
 
   oxy-button[raised] {
-    background-color: var(--button-background-color);
-    color: var(--button-foreground-color);
+    background-color: var(--bg-color-button);
+    color: var(--fg-color-button);
     box-shadow: var(--default-box-shadow);
   }
   oxy-button:not([raised]) {
@@ -55,7 +56,7 @@ export const sharedStyles = css`
   }
 
   .paper-card {
-    background-color: var(--secondary-background-color);
+    background-color: var(--bg-color-2);
     box-shadow: var(--default-box-shadow);
     padding: 16px;
   }
