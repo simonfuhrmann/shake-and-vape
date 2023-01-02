@@ -13,8 +13,8 @@ The website can be served locally for development:
 * Install NPM dependencies: `npm install`
 * Serve the website: `npm run start`
 
-The website uses the lit-element JS library for rendering, and Firebase as
-authentication and database backend.
+The website uses the [lit-element](https://lit.dev) JS library for rendering,
+and Firebase as authentication and database backend.
 
 ## Deployment
 

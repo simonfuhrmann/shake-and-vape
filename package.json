@@ -2,7 +2,6 @@
   "name": "shake-and-vape",
   "version": "0.1.0",
   "description": "Shake & Vape - DIY Vaping Recipes",
-  "main": "index.html",
   "author": "Simon Fuhrmann",
   "license": "BSD-2-Clause",
   "repository": "github:simonfuhrmann/shake-and-vape",
@@ -13,14 +12,14 @@
   },
   "dependencies": {
     "firebase": "^8.3.1",
-    "lit": "^2.0.0-rc.1",
+    "lit": "^2",
     "oxygen-mdc": "^0.1.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.13.0",
     "@babel/plugin-proposal-decorators": "^7.13.5",
-    "@babel/preset-typescript": "^7.13.0",
-    "parcel": "^2.0.0-beta.2",
+    "parcel": "^2",
+    "process": "^0.11.10",
     "typescript": "^4"
   }
 }
