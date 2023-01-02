@@ -5,8 +5,10 @@ import firebase from 'firebase/app';
 import {OxyDialog} from 'oxygen-mdc/oxy-dialog';
 import {OxyInput} from 'oxygen-mdc/oxy-input';
 import 'oxygen-mdc/oxy-button';
+import 'oxygen-mdc/oxy-icon';
 import 'oxygen-mdc/oxy-input';
 import 'oxygen-mdc/oxy-dialog';
+import './diy-icons-logos';
 
 import {StateMixin, State} from '../mixins/state-mixin';
 import {sharedStyles} from './diy-styles';
