@@ -10,12 +10,12 @@ import 'oxygen-mdc/oxy-input';
 import 'oxygen-mdc/oxy-dialog';
 import './diy-icons-logos';
 
-import {StateMixin, State} from '../mixins/state-mixin';
+import {StateController, State} from '../controllers/state-controller';
 import {sharedStyles} from './diy-styles';
 import {firebaseApi} from '../modules/firebase-api'
 
 @customElement('diy-auth')
-export class DiyAuth extends StateMixin(LitElement) {
+export class DiyAuth extends LitElement {
   static styles = [
     sharedStyles, css`
     :host {
@@ -73,6 +73,11 @@ export class DiyAuth extends StateMixin(LitElement) {
   @state() private isSignInWithEmailLink = false;
   @state() private infoDialogHeading = '';
   @state() private infoDialogMessage = '';
+
+  constructor() {
+    super();
+    new StateController(this);
+  }
 
   connectedCallback() {
     super.connectedCallback();

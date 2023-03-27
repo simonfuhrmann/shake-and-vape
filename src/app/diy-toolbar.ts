@@ -8,12 +8,12 @@ import 'oxygen-mdc/oxy-icons-all';
 
 import {sharedStyles} from './diy-styles';
 import {UserDetails} from '../modules/state-types';
-import {StateMixin, State} from '../mixins/state-mixin';
+import {StateController, State} from '../controllers/state-controller';
 
 import '../components/diy-router-link';
 
 @customElement('diy-toolbar')
-export class DiyToolbar extends StateMixin(LitElement) {
+export class DiyToolbar extends LitElement {
   static styles = [
     sharedStyles, css`
     :host {
@@ -42,6 +42,11 @@ export class DiyToolbar extends StateMixin(LitElement) {
 
   @state() private currentUser: firebase.User|null = null;
   @state() private userDetails: UserDetails|null = null;
+
+  constructor() {
+    super();
+    new StateController(this);
+  }
 
   stateChanged(newState: State, _oldState: State|null) {
     this.currentUser = newState.firebaseUser;

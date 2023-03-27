@@ -7,7 +7,7 @@ import 'oxygen-mdc/oxy-button';
 import 'oxygen-mdc/oxy-input';
 import 'oxygen-mdc/oxy-dialog';
 
-import {StateMixin} from '../mixins/state-mixin';
+import {StateController} from '../controllers/state-controller';
 import {State, UserDetails} from '../modules/state-types';
 import {firebaseApi} from '../modules/firebase-api'
 import {firestoreApi, DocumentSnapshot} from '../modules/firestore-api'
@@ -15,7 +15,7 @@ import {sharedStyles} from './diy-styles';
 import * as Actions from '../modules/state-actions';
 
 @customElement('diy-auth-state')
-export class DiyAuthState extends StateMixin(LitElement) {
+export class DiyAuthState extends LitElement {
   static styles = [
     sharedStyles, css`
       #user-name-error {
@@ -30,6 +30,11 @@ export class DiyAuthState extends StateMixin(LitElement) {
   @query('#user-name-input') userNameInput: OxyInput|undefined;
   @state() private userDetails: UserDetails|null = null;
   @state() private userNameError: string = '';
+
+  constructor() {
+    super();
+    new StateController(this);
+  }
 
   connectedCallback() {
     super.connectedCallback();

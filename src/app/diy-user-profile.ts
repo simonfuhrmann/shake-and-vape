@@ -8,14 +8,14 @@ import 'oxygen-mdc/oxy-input';
 import 'oxygen-mdc/oxy-icon';
 import 'oxygen-mdc/oxy-icons-all';
 
-import {sharedStyles} from './diy-styles';
 import {firebaseApi} from '../modules/firebase-api'
 import {firestoreApi} from '../modules/firestore-api'
+import {sharedStyles} from './diy-styles';
+import {StateController, State} from '../controllers/state-controller';
 import {UserDetails} from '../modules/state-types';
-import {StateMixin, State} from '../mixins/state-mixin';
 
 @customElement('diy-user-profile')
-export class DiyUserProfile extends StateMixin(LitElement) {
+export class DiyUserProfile extends LitElement {
   static styles = [
     sharedStyles, css`
     :host {
@@ -42,6 +42,11 @@ export class DiyUserProfile extends StateMixin(LitElement) {
   @state() private currentUser: firebase.User|null = null;
   @state() private userDetails: UserDetails|null = null;
   @state() private changeNameError = '';
+
+  constructor() {
+    super();
+    new StateController(this);
+  }
 
   stateChanged(newState: State, _oldState: State|null) {
     this.currentUser = newState.firebaseUser;
