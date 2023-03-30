@@ -10,17 +10,22 @@ import {sharedStyles} from './diy-styles';
 import {UserDetails} from '../modules/state-types';
 import {StateController, State} from '../controllers/state-controller';
 
+import './diy-menu-box';
 import '../components/diy-router-link';
 
 @customElement('diy-toolbar')
 export class DiyToolbar extends LitElement {
   static styles = [
     sharedStyles, css`
-    :host {
-      background-color: var(--bg-color-toolbar);
-      color: var(--fg-color-toolbar);
+    #toolbar {
+      background-color: var(--diy-toolbar-bg-color);
+      color: var(--diy-toolbar-fg-color);
+      height: var(--diy-toolbar-height);
       padding: 0 16px;
-      height: 64px;
+
+      position: relative;  /* For z-index to work. */
+      z-index: 3;          /* Be above the menu. */
+
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -32,16 +37,27 @@ export class DiyToolbar extends LitElement {
       font-weight: normal;
       flex-grow: 1;
     }
-    #menu-button {
-      border-radius: 20px;
-    }
     #signin-button, #user-button {
       padding: 8px 16px;
+    }
+
+    /* Show menu button if screen is small. */
+    @media screen and (max-width: 690px) {
+      #home-button {
+        display: none;
+      }
+    }
+    /* Show home button if screen is big. */
+    @media screen and (min-width: 691px) {
+      #menu-button {
+        display: none;
+      }
     }
   `];
 
   @state() private currentUser: firebase.User|null = null;
   @state() private userDetails: UserDetails|null = null;
+  @state() private showMenu = false;
 
   constructor() {
     super();
@@ -55,16 +71,29 @@ export class DiyToolbar extends LitElement {
 
   render() {
     return html`
-      <diy-router-link path="">
-        <oxy-button id="menu-button">
+      <div id="toolbar">
+        <diy-router-link path="">
+          <oxy-button id="home-button">
+            <oxy-icon icon="icons:home"></oxy-icon>
+          </oxy-button>
+        </diy-router-link>
+
+        <oxy-button
+            id="menu-button"
+            @click=${() => this.showMenu = !this.showMenu}>
           <oxy-icon icon="icons:menu"></oxy-icon>
         </oxy-button>
-      </diy-router-link>
 
-      <h1>Shake and Vape</h1>
+        <h1>Shake and Vape</h1>
 
-      ${this.renderSigninButton()}
-      ${this.renderUserMenu()}
+        ${this.renderSigninButton()}
+        ${this.renderProfileButton()}
+      </div>
+
+      <diy-menu-box
+          ?opened=${this.showMenu}
+          @closed=${() => this.showMenu = false}>
+      </diy-menu-box>
     `;
   }
 
@@ -80,7 +109,7 @@ export class DiyToolbar extends LitElement {
     `;
   }
 
-  private renderUserMenu() {
+  private renderProfileButton() {
     if (this.currentUser === null) return nothing;
     return html`
       <diy-router-link path="/user/profile">

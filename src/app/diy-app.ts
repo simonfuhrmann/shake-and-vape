@@ -10,6 +10,7 @@ import './diy-auth-state';
 import './diy-user-profile';
 import './diy-toolbar';
 import './diy-welcome-page';
+import './diy-menu-bar';
 
 @customElement('diy-app')
 export class DiyApp extends LitElement {
@@ -18,7 +19,7 @@ export class DiyApp extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
-      background-color: var(--bg-color-1);
+      background-color: var(--bg-color-2);
       min-height: 100vh;
     }`];
 
@@ -26,6 +27,7 @@ export class DiyApp extends LitElement {
     return html`
       <diy-auth-state></diy-auth-state>
       <diy-toolbar></diy-toolbar>
+      <diy-menu-bar></diy-menu-bar>
 
       <diy-router-view path="/">
         <template>

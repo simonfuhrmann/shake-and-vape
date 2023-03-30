@@ -44,6 +44,9 @@ export class DiyAuthState extends LitElement {
       Actions.setCurrentUser(user);
       this.loadUserDetails(user);
     });
+
+    // Focus the user name input.
+    setTimeout(() => { this.userNameInput?.focus(); }, 0);
   }
 
   stateChanged(newState: State) {
@@ -65,7 +68,7 @@ export class DiyAuthState extends LitElement {
           <p>
             Shake and Vape takes your privacy serious. As such, your email
             address and real name that may be associated with your sign-in
-            credientials is never displayed to other users. You choose the name
+            credientials are never displayed to other users. You choose the name
             other users will see.
           </p>
           <oxy-input id="user-name-input" placeholder="Enter name"></oxy-input>

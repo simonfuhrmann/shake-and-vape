@@ -2,12 +2,14 @@ import {css} from 'lit';
 
 export const sharedStyles = css`
   :host {
-    --bg-color-1: #eceff1;
+    --bg-color-1: #ffffff;
     --bg-color-2: #f9fafb;
-    --bg-color-2: #fff;
+    --bg-color-3: #eceff1;
 
     --fg-color-1: #000;
     --fg-color-2: #333;
+    --fg-color-3: #555;
+
     --fg-color-disabled: #666;
     --fg-color-error: #f00;
     --fg-color-success: #0f0;
@@ -16,15 +18,15 @@ export const sharedStyles = css`
 
     --bg-color-button: #1a73e8;
     --fg-color-button: white;
-    --bg-color-toolbar: #424b4b;
-    --fg-color-toolbar: white;
+
+    --diy-toolbar-bg-color: #424b4b;
+    --diy-toolbar-fg-color: white;
+    --diy-toolbar-height: 56px;
 
     --default-box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2),
         0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 
     --default-content-width: 690px;
-
-    --oxy-input-border-color-focused: #aaa;
 
     --oxy-scrollbar-width: 12px;
     --oxy-scrollbar-track-color: transparent;
@@ -51,12 +53,20 @@ export const sharedStyles = css`
     margin-right: 8px;
   }
 
+  oxy-dialog {
+    --oxy-dialog-background: var(--bg-color-3);
+  }
   oxy-dialog > .content {
     margin: 0 16px;
   }
 
+  oxy-input {
+    --oxy-input-background: var(--bg-color-1);
+    --oxy-input-border-focused: 1px solid var(--separator-color);
+  }
+
   .paper-card {
-    background-color: var(--bg-color-2);
+    background-color: var(--bg-color-3);
     box-shadow: var(--default-box-shadow);
     padding: 16px;
   }

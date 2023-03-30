@@ -11,15 +11,15 @@
     "clean": "rm -rf .cache dist"
   },
   "dependencies": {
-    "firebase": "^8.3.1",
-    "lit": "^2",
-    "oxygen-mdc": "^0.1.1"
+    "firebase": "^8",
+    "lit": "^2.7.0",
+    "oxygen-mdc": "^1.1.0"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.13.0",
-    "@babel/plugin-proposal-decorators": "^7.13.5",
-    "parcel": "^2",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-decorators": "^7.21.0",
+    "parcel": "^2.8.3",
     "process": "^0.11.10",
-    "typescript": "^4"
+    "typescript": "^5.0.2"
   }
 }

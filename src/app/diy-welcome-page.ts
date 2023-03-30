@@ -8,19 +8,18 @@ export class DiyWelcomePage extends LitElement {
   static styles = [
     sharedStyles, css`
     :host {
-      max-width: var(--default-content-width);
-      margin: 0 auto;
-      padding: 32px;
       display: flex;
       flex-direction: column;
-    }`];
+    }
+    #content {
+      padding: 16px;
+    }
+  `];
 
   render() {
     return html`
-      <div class="explore">
-        <div class="paper-card">
-          <p>Welcome</p>
-        </div>
+      <div id="content">
+        <p>Welcome</p>
       </div>
     `;
   }
