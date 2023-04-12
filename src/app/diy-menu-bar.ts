@@ -16,8 +16,10 @@ export class DiyMenuBar extends LitElement {
     :host {
       background-color: var(--bg-color-3);
     }
-    oxy-tab {
+    oxy-tabs {
+      user-select: none;
       margin-top: 4px;
+      padding: 0 8px;
     }
     .separator {
       width: 1px;

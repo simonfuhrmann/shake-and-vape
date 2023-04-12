@@ -43,15 +43,12 @@ export class DiyToolbar extends LitElement {
 
     /* Show menu button if screen is small. */
     @media screen and (max-width: 690px) {
-      #home-button {
-        display: none;
-      }
+      #home-button { display: none; }
     }
     /* Show home button if screen is big. */
     @media screen and (min-width: 691px) {
-      #menu-button {
-        display: none;
-      }
+      #menu-button { display: none; }
+      diy-menu-box { display: none; }
     }
   `];
 

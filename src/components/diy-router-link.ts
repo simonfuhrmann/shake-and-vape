@@ -13,6 +13,10 @@ export class DiyRouterLink extends LitElement {
   @property({type: String}) path = '';
 
   render() {
-    return html`<a href="#${this.path}"><slot></slot></a>`;
+    return html`
+      <a tabindex="-1" href="#${this.path}">
+        <slot></slot>
+      </a>
+    `;
   }
 }

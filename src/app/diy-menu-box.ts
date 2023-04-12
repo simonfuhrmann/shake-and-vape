@@ -7,6 +7,7 @@ import {sharedStyles} from './diy-styles';
 
 /**
  * A menu box expands from under the toolbar when the opened property is set.
+ * TODO: Opacity does not remove the menu from tab order.
  */
 @customElement('diy-menu-box')
 export class DiyMenuBox extends LitElement {
