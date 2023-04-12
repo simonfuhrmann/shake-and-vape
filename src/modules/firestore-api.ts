@@ -1,15 +1,11 @@
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+import {setDoc, deleteDoc, doc, getDoc, onSnapshot, DocumentSnapshot, Firestore} from 'firebase/firestore';
 
 import {firebaseApi} from './firebase-api';
-
-export type DocumentSnapshot = firebase.firestore.DocumentSnapshot<
-    firebase.firestore.DocumentData>;
 
 type UnsubscribeFn = () => void;
 
 class FirestoreApi {
-  private db: firebase.firestore.Firestore;
+  private db: Firestore;
   private userDocUnsubscribe: UnsubscribeFn|undefined;
   private usernameCache = new Map<string, Promise<string>>();
 
@@ -24,10 +20,9 @@ class FirestoreApi {
       this.userDocUnsubscribe();
       this.userDocUnsubscribe = undefined;
     }
-
     if (!uid) return;
-    const ref = this.db.collection('users').doc(uid);
-    this.userDocUnsubscribe = ref.onSnapshot(callback);
+
+    this.userDocUnsubscribe = onSnapshot(doc(this.db, 'users', uid), callback);
   }
 
   changeUsername(uid: string, newName: string, oldName: string) {
@@ -44,15 +39,16 @@ class FirestoreApi {
     // in the 'users' collection with the new name. The last step is to delete
     // the old username in case of a name change (print but otherwise ignore
     // failures).
-    const newNameDoc = this.db.collection('usernames').doc(newName);
-    return newNameDoc.set({ uid })
+
+    const newNameDoc = doc(this.db, 'usernames', newName);
+    return setDoc(newNameDoc, {uid})
       .finally(() => {
-        const userDoc = this.db.collection('users').doc(uid);
-        return userDoc.set({ name: newName })
+        const userDoc = doc(this.db, 'users', uid);
+        return setDoc(userDoc, {name: newName})
           .then(() => {
             if (!oldName) return Promise.resolve();
-            const oldNameDoc = this.db.collection('usernames').doc(oldName);
-            return oldNameDoc.delete().catch((error) => {
+            const oldNameDoc = doc(this.db, 'usernames', oldName);
+            return deleteDoc(oldNameDoc).catch((error) => {
               console.warn('Error deleting old username doc', error);
             });
           })
@@ -68,7 +64,7 @@ class FirestoreApi {
     if (entry) return entry;
 
     // Otherwise, request the username from Firestore.
-    const promise = this.db.collection('users').doc(uid).get()
+    const promise = getDoc(doc(this.db, 'users', uid))
         .then((doc) => doc.data()?.name || '')
         .catch((error) => {
           console.log('Error fetching user name:', error.message);

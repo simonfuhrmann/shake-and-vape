@@ -11,7 +11,7 @@
     "clean": "rm -rf .cache dist"
   },
   "dependencies": {
-    "firebase": "^8",
+    "firebase": "^9.19.1",
     "lit": "^2.7.0",
     "oxygen-mdc": "^1.1.0"
   },

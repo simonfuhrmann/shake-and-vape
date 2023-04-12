@@ -1,22 +1,25 @@
-import firebase from 'firebase/app';
+import {FirebaseApp, initializeApp} from 'firebase/app';
+import {Firestore, getFirestore} from 'firebase/firestore';
+import {Auth, getAuth} from 'firebase/auth';
+
 import 'firebase/auth';
 import 'firebase/firestore';
 
 import {firebaseConfig} from '../config/firebase';
 
 class FirebaseApi {
-  private app: firebase.app.App;
+  private app: FirebaseApp;
 
   constructor() {
-    this.app = firebase.initializeApp(firebaseConfig);
+    this.app = initializeApp(firebaseConfig);
   }
 
-  getAuth(): firebase.auth.Auth {
-    return this.app.auth();
+  getAuth(): Auth {
+    return getAuth(this.app);
   }
 
-  getFirestore(): firebase.firestore.Firestore {
-    return this.app.firestore();
+  getFirestore(): Firestore {
+    return getFirestore(this.app);
   }
 }
 
