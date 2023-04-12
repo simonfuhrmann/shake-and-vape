@@ -2,6 +2,7 @@ import {LitElement, css, html} from 'lit';
 import {customElement} from 'lit/decorators';
 
 import {sharedStyles} from './diy-styles';
+import {initState} from '../modules/state-init';
 
 import '../components/diy-router-view';
 import '../components/diy-router-link';
@@ -22,6 +23,11 @@ export class DiyApp extends LitElement {
       background-color: var(--bg-color-2);
       min-height: 100vh;
     }`];
+
+  constructor() {
+    super();
+    initState();
+  }
 
   render() {
     return html`

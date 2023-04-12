@@ -1,6 +1,6 @@
 import {LitElement, css, html, nothing} from 'lit';
 import {customElement, query, state} from 'lit/decorators';
-import firebase from 'firebase/app';
+import {User as FirebaseUser} from 'firebase/auth';
 
 import {OxyInput} from 'oxygen-mdc/oxy-input';
 import 'oxygen-mdc/oxy-button';
@@ -39,7 +39,7 @@ export class DiyUserProfile extends LitElement {
   `];
 
   @query('#name-input') nameInput: OxyInput|undefined;
-  @state() private currentUser: firebase.User|null = null;
+  @state() private currentUser: FirebaseUser|null = null;
   @state() private userDetails: UserDetails|null = null;
   @state() private changeNameError = '';
 

@@ -1,6 +1,7 @@
 import {LitElement, css, html, nothing} from 'lit';
 import {customElement, query, state} from 'lit/decorators';
-import firebase from 'firebase/app';
+import {DocumentSnapshot} from 'firebase/firestore';
+import {User as FirebaseUser} from 'firebase/auth';
 
 import {OxyInput} from 'oxygen-mdc/oxy-input';
 import 'oxygen-mdc/oxy-button';
@@ -10,7 +11,7 @@ import 'oxygen-mdc/oxy-dialog';
 import {StateController} from '../controllers/state-controller';
 import {State, UserDetails} from '../modules/state-types';
 import {firebaseApi} from '../modules/firebase-api'
-import {firestoreApi, DocumentSnapshot} from '../modules/firestore-api'
+import {firestoreApi} from '../modules/firestore-api'
 import {sharedStyles} from './diy-styles';
 import * as Actions from '../modules/state-actions';
 
@@ -25,7 +26,7 @@ export class DiyAuthState extends LitElement {
       }
     `];
 
-  private currentUser: firebase.User|null = null;
+  private currentUser: FirebaseUser|null = null;
 
   @query('#user-name-input') userNameInput: OxyInput|undefined;
   @state() private userDetails: UserDetails|null = null;
@@ -40,7 +41,7 @@ export class DiyAuthState extends LitElement {
     super.connectedCallback();
 
     // Publish the current user to the global state every time it changes.
-    firebaseApi.getAuth().onAuthStateChanged((user: firebase.User|null) => {
+    firebaseApi.getAuth().onAuthStateChanged((user: FirebaseUser|null) => {
       Actions.setCurrentUser(user);
       this.loadUserDetails(user);
     });
@@ -81,7 +82,7 @@ export class DiyAuthState extends LitElement {
     `;
   }
 
-  private loadUserDetails(user: firebase.User|null) {
+  private loadUserDetails(user: FirebaseUser|null) {
     if (!user || !user.uid) {
       Actions.setUserDetails(null);
       firestoreApi.onUserDocSnapshot('', () => {});

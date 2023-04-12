@@ -1,6 +1,6 @@
 import {LitElement, css, html, nothing} from 'lit';
 import {customElement, query, state} from 'lit/decorators';
-import firebase from 'firebase/app';
+import {getRedirectResult, isSignInWithEmailLink, sendSignInLinkToEmail, signInWithRedirect, signInWithEmailLink, GoogleAuthProvider, GithubAuthProvider, UserCredential} from 'firebase/auth';
 
 import {OxyDialog} from 'oxygen-mdc/oxy-dialog';
 import {OxyInput} from 'oxygen-mdc/oxy-input';
@@ -83,7 +83,7 @@ export class DiyAuth extends LitElement {
     super.connectedCallback();
 
     // Signs the user in after opening the website from an email link.
-    if (this.firebaseAuth.isSignInWithEmailLink(window.location.href)) {
+    if (isSignInWithEmailLink(this.firebaseAuth, window.location.href)) {
       this.isSignInWithEmailLink = true;
       const email = window.localStorage.getItem('emailForSignIn');
       window.localStorage.removeItem('emailForSignIn');
@@ -109,11 +109,11 @@ export class DiyAuth extends LitElement {
     // Open a dialog that tells the user to wait during third-party sign-in. If
     // no third-party sign-in happened, the promise resolves immediately.
     this.openWaitingForAuthDialog();
-    this.firebaseAuth.getRedirectResult()
-        .then(data => {
+    getRedirectResult(this.firebaseAuth)
+        .then((data: UserCredential|null) => {
           this.closeWaitingForAuthDialog();
           // If the user did not attempt to sign-in: Ignore this case.
-          if (!data.user) return;
+          if (!data?.user) return;
           // The sign-in process was successful. Redirect user.
           this.redirectAfterSignIn();
         })
@@ -241,20 +241,20 @@ export class DiyAuth extends LitElement {
   }
 
   private signInWithGoogle() {
-    const provider = new firebase.auth.GoogleAuthProvider();
+    const provider = new GoogleAuthProvider();
     provider.addScope('email');
-    this.firebaseAuth.signInWithRedirect(provider);
+    signInWithRedirect(this.firebaseAuth, provider);
   }
 
   private signInWithGithub() {
-    const provider = new firebase.auth.GithubAuthProvider();
+    const provider = new GithubAuthProvider();
     provider.addScope('user:email');
-    this.firebaseAuth.signInWithRedirect(provider);
+    signInWithRedirect(this.firebaseAuth, provider);
   }
 
   private signInWithEmail(email: string) {
     this.openWaitingForAuthDialog();
-    this.firebaseAuth.signInWithEmailLink(email, window.location.href)
+    signInWithEmailLink(this.firebaseAuth, email, window.location.href)
         .then(() => {
           this.closeWaitingForAuthDialog();
           this.redirectAfterSignIn();
@@ -279,7 +279,7 @@ export class DiyAuth extends LitElement {
       handleCodeInApp: true,
     };
     this.sendingEmailDialog?.open();
-    this.firebaseAuth.sendSignInLinkToEmail(email, actionCodeSettings)
+    sendSignInLinkToEmail(this.firebaseAuth, email, actionCodeSettings)
         .then(() => {
           this.sendingEmailDialog?.close();
           window.localStorage.setItem('emailForSignIn', email);

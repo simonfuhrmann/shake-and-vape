@@ -1,9 +1,9 @@
-import firebase from 'firebase/app';
+import {User as FirebaseUser} from 'firebase/auth';
 
 import {State, UserDetails, stateManager, getInitialState} from './state-types';
 
 // Sets the current Firebase user.
-export function setCurrentUser(firebaseUser: firebase.User|null) {
+export function setCurrentUser(firebaseUser: FirebaseUser|null) {
   const action = (state: State) => {
     if (state.firebaseUser === firebaseUser) return state;
     return {...state, firebaseUser};

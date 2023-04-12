@@ -1,6 +1,6 @@
 import {LitElement, css, html, nothing} from 'lit';
 import {customElement, state} from 'lit/decorators';
-import firebase from 'firebase/app';
+import {User as FirebaseUser} from 'firebase/auth';
 
 import 'oxygen-mdc/oxy-button';
 import 'oxygen-mdc/oxy-icon';
@@ -52,7 +52,7 @@ export class DiyToolbar extends LitElement {
     }
   `];
 
-  @state() private currentUser: firebase.User|null = null;
+  @state() private currentUser: FirebaseUser|null = null;
   @state() private userDetails: UserDetails|null = null;
   @state() private showMenu = false;
 

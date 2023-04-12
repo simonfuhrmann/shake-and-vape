@@ -1,6 +1,7 @@
-import {setDoc, deleteDoc, doc, getDoc, onSnapshot, DocumentSnapshot, Firestore} from 'firebase/firestore';
+import {collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, setDoc, DocumentSnapshot, Firestore, QuerySnapshot} from 'firebase/firestore';
 
 import {firebaseApi} from './firebase-api';
+import {FlavorVendor, Flavor} from './state-types';
 
 type UnsubscribeFn = () => void;
 
@@ -66,12 +67,46 @@ class FirestoreApi {
     // Otherwise, request the username from Firestore.
     const promise = getDoc(doc(this.db, 'users', uid))
         .then((doc) => doc.data()?.name || '')
-        .catch((error) => {
+        .catch((error: Error) => {
           console.log('Error fetching user name:', error.message);
           return '';
         });
     this.usernameCache.set(uid, promise);
     return promise;
+  }
+
+  getFlavorVendors(): Promise<FlavorVendor[]> {
+    return getDocs(collection(this.db, 'vendors'))
+      .then((snapshot: QuerySnapshot) => {
+        const vendors: FlavorVendor[] = [];
+        snapshot.docs.forEach((doc) => {
+          const vendor: FlavorVendor = {
+            id: doc.id,
+            name: doc.get('name') ?? '',
+            short: doc.get('short') ?? '',
+            website: doc.get('website') ?? '',
+            description: doc.get('description') ?? '',
+          };
+          vendors.push(vendor);
+        });
+        return vendors;
+      });
+  }
+
+  getFlavors(): Promise<Flavor[]> {
+    return getDocs(collection(this.db, 'flavors'))
+      .then((snapshot: QuerySnapshot) => {
+        const flavors: Flavor[] = [];
+        snapshot.docs.forEach((doc) => {
+          const flavor: Flavor = {
+            id: doc.id,
+            name: doc.get('name') ?? '',
+            vendor: doc.get('vendor') ?? '',
+          };
+          flavors.push(flavor);
+        });
+        return flavors;
+      });
   }
 }
 
