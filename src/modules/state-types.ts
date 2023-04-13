@@ -6,7 +6,7 @@ export interface UserDetails {
   name: string;
 }
 
-export interface FlavorVendor {
+export interface Vendor {
   id: string;       // Example: 'cap'
   name: string;     // Example: 'Capella'
   short: string;    // Example: 'CAP'
@@ -17,22 +17,23 @@ export interface FlavorVendor {
 export interface Flavor {
   id: string;        // Example: 'cap-apple-pie'
   name: string;      // Example: 'Apple Pie'
-  vendor: FlavorVendor;
+  vendorId: string   // Example: 'cap'
+  vendor: Vendor|undefined;
 }
 
 export interface State {
   firebaseUser: FirebaseUser|null;
   userDetails: UserDetails|null;
-  flavorVendors: FlavorVendor[]|null;
-  flavors: Flavor[]|null;
+  vendors: Map<string, Vendor>;
+  flavors: Map<string, Flavor>;
 }
 
 export function getInitialState(): State {
   return {
     firebaseUser: null,
     userDetails: null,
-    flavorVendors: null,
-    flavors: null,
+    vendors: new Map(),
+    flavors: new Map(),
   };
 }
 

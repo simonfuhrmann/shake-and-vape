@@ -50,23 +50,23 @@ export class StateManager<State> {
 
   // Adds a new listener to the manager. The new listener is immediately called
   // with `newState` set to the current state, and `oldState` set to `null`.
-  addListener(listener: StateListener<State>) {
+  addListener(listener: StateListener<State>): void {
     this.listeners.push(listener);
     listener(this.state, null);
   }
 
   // Removes a listener from the manager.
-  removeListener(listener: StateListener<State>) {
+  removeListener(listener: StateListener<State>): void {
     this.listeners = this.listeners.filter(l => l !== listener);
   }
 
   // Returns the current state.
-  getState() {
+  getState(): State {
     return this.state;
   }
 
   // Processes an action that changes the state.
-  processAction(action: StateAction<State>) {
+  processAction(action: StateAction<State>): void {
     const oldState = this.state;
     const newState = action(this.state);
     if (oldState === newState) return;
@@ -79,7 +79,7 @@ export class StateManager<State> {
   // queued to prevent sending state change notifications in the wrong order.
   // Without a queue, some listeners may receive change notifications as the
   // recursion unwinds, hence receive notifications in reverse order.
-  private notify(newState: State, oldState: State) {
+  private notify(newState: State, oldState: State): void {
     if (this.queue.length > 0) {
       this.queue.push({newState, oldState});
       return;

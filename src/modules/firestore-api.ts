@@ -1,7 +1,7 @@
 import {collection, deleteDoc, doc, getDoc, getDocs, onSnapshot, setDoc, DocumentSnapshot, Firestore, QuerySnapshot} from 'firebase/firestore';
 
 import {firebaseApi} from './firebase-api';
-import {FlavorVendor, Flavor} from './state-types';
+import {Vendor, Flavor} from './state-types';
 
 type UnsubscribeFn = () => void;
 
@@ -75,17 +75,17 @@ class FirestoreApi {
     return promise;
   }
 
-  getFlavorVendors(): Promise<FlavorVendor[]> {
+  getVendors(): Promise<Vendor[]> {
     return getDocs(collection(this.db, 'vendors'))
       .then((snapshot: QuerySnapshot) => {
-        const vendors: FlavorVendor[] = [];
+        const vendors: Vendor[] = [];
         snapshot.docs.forEach((doc) => {
-          const vendor: FlavorVendor = {
+          const vendor: Vendor = {
             id: doc.id,
-            name: doc.get('name') ?? '',
-            short: doc.get('short') ?? '',
-            website: doc.get('website') ?? '',
-            description: doc.get('description') ?? '',
+            name: doc.get('name') as string ?? '',
+            short: doc.get('short') as string ?? '',
+            website: doc.get('website') as string ?? '',
+            description: doc.get('description') as string ?? '',
           };
           vendors.push(vendor);
         });
@@ -100,8 +100,9 @@ class FirestoreApi {
         snapshot.docs.forEach((doc) => {
           const flavor: Flavor = {
             id: doc.id,
-            name: doc.get('name') ?? '',
-            vendor: doc.get('vendor') ?? '',
+            name: doc.get('name') as string ?? '',
+            vendorId: doc.get('vendor') as string?? '',
+            vendor: undefined,
           };
           flavors.push(flavor);
         });
